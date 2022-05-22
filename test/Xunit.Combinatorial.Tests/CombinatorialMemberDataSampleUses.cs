@@ -86,4 +86,40 @@ public class CombinatorialMemberDataSampleUses
     {
         Assert.True(true);
     }
+
+    [Theory, CombinatorialData]
+    public void CombinatorialMemberDataFromFactoryPropertiesWithSecondParam(
+        [CombinatorialMemberData(nameof(FreshCombinations))] Func<Mutable> createMutable,
+        bool _)
+    {
+        var mutable = createMutable();
+        Assert.Equal(4, mutable.X);
+        mutable.X = 8;
+    }
+
+    public static IEnumerable<Func<Mutable>> FreshCombinations =>
+        new Func<Mutable>[]
+        {
+            () => new(),
+        };
+    
+    [Theory, CombinatorialData]
+    public void CombinatorialMemberDataFromPropertiesWithSecondParam(
+        [CombinatorialMemberData(nameof(StaleCombinations))] Mutable mutable,
+        bool _)
+    {
+        Assert.Equal(4, mutable.X);
+        mutable.X = 8;
+    }
+
+    public static IEnumerable<Mutable?> StaleCombinations =>
+        new Mutable[]
+        {
+            new(),
+        };
+
+    public class Mutable
+    {
+        public int X { set; get; } = 4;
+    }
 }
